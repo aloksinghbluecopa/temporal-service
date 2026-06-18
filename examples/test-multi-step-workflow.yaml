@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: data-pipeline-template
+spec:
+  templates:
+    - name: extract
+      container:
+        image: busybox
+        command: [sh, -c]
+        args: ["echo '[EXTRACT] Pulling data from source...' && sleep 1 && echo '[EXTRACT] Done'"]
+
+    - name: transform
+      inputs:
+        parameters:
+          - name: record-count
+            value: "100"
+      container:
+        image: busybox
+        command: [sh, -c]
+        args: ["echo '[TRANSFORM] Processing {{inputs.parameters.record-count}} records...' && sleep 1 && echo '[TRANSFORM] Done'"]
+
+    - name: load
+      container:
+        image: busybox
+        command: [sh, -c]
+        args: ["echo '[LOAD] Writing to destination...' && sleep 1 && echo '[LOAD] Done. Workflow: {{workflow.uid}}'"]

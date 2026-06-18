@@ -1,0 +1,7 @@
+temporal-service
+Copyright 2026 Bluecopa
+
+This product includes software developed at Bluecopa.
+
+This product bundles software licensed under the Apache License, Version 2.0,
+including Spring Boot, the Temporal Java SDK, Jackson, and the Kubernetes Java client.

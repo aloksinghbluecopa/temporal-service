@@ -1,0 +1,11 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: hello-world-template
+spec:
+  templates:
+    - name: say-hello
+      container:
+        image: busybox
+        command: [sh, -c]
+        args: ["echo 'Hello from temporal-service! Job ID: {{workflow.uid}}' && sleep 2 && echo 'Done!'"]

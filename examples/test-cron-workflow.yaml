@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: hello-world-cron
+spec:
+  schedule: "*/2 * * * *"
+  timezone: "UTC"
+  concurrencyPolicy: Forbid
+  suspend: false
+  workflowSpec:
+    entrypoint: main
+    templates:
+      - name: main
+        steps:
+          - - name: step-1
+              templateRef:
+                name: hello-world-template
+                template: say-hello

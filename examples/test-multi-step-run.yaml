@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: data-pipeline-run-1
+  labels:
+    type: etl
+    env: local
+spec:
+  entrypoint: pipeline
+  templates:
+    - name: pipeline
+      steps:
+        - - name: extract
+            templateRef:
+              name: data-pipeline-template
+              template: extract
+        - - name: transform
+            templateRef:
+              name: data-pipeline-template
+              template: transform
+            arguments:
+              parameters:
+                - name: record-count
+                  value: "250"
+        - - name: load
+            templateRef:
+              name: data-pipeline-template
+              template: load

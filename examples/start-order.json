@@ -1,0 +1,8 @@
+{
+  "definitionYaml": "id: order\nversion: \"1.0\"\ntasks:\n  - name: reserve\n    call: echo\n    with:\n      sku: \"${ .sku }\"\n      quantity: \"${ .quantity }\"\n    result: reservation\n    retry:\n      maxAttempts: 3\n      initialInterval: 1s\n  - name: approval\n    switch:\n      - when: \"${ .total >= 100 }\"\n        then:\n          - name: review\n            call: echo\n            with:\n              status: manual-review\n            result: approval\n      - otherwise: true\n        then:\n          - name: approve\n            call: echo\n            with:\n              status: auto-approved\n            result: approval\n",
+  "input": {
+    "sku": "sku-123",
+    "quantity": 2,
+    "total": 125
+  }
+}

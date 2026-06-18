@@ -1,0 +1,49 @@
+id: order
+version: "1.0"
+tasks:
+  - name: reserve
+    call: echo
+    with:
+      sku: "${ .sku }"
+      quantity: "${ .quantity }"
+    result: reservation
+    timeout:
+      startToClose: 10s
+    retry:
+      maxAttempts: 3
+      initialInterval: 1s
+
+  - name: approval
+    switch:
+      - when: "${ .total >= 100 }"
+        then:
+          - name: review
+            call: echo
+            with:
+              status: manual-review
+            result: approval
+      - otherwise: true
+        then:
+          - name: approve
+            call: echo
+            with:
+              status: auto-approved
+            result: approval
+
+  - name: fulfillment
+    fork:
+      branches:
+        - name: notify
+          tasks:
+            - call: echo
+              with:
+                channel: email
+                template: order-confirmed
+        - name: ledger
+          tasks:
+            - call: math.add
+              with:
+                values:
+                  - "${ .total }"
+                  - 0
+    result: fulfillment

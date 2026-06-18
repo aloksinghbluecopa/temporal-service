@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: temporal-service
+  servlet:
+    multipart:
+      max-request-size: 1MB
+      max-file-size: 1MB
+
+server:
+  port: 8082
+
+temporal:
+  target: 127.0.0.1:7233
+  namespace: default
+  task-queue: dsl-task-queue
+  trigger-coordinator-queue: trigger-coordinator-queue
+
+dsl:
+  api:
+    base-path: /dsl
+    definitions-path: /definitions/{id}
+    start-path: /workflows/start
+    run-path: /workflows/run
+  engine:
+    workflow-id-prefix: dsl
+    inline-definition-id: inline
+    default-activity-start-to-close: 30s
+    branch-name-prefix: branch
+    compete-cancel-reason: compete branch lost
+    default-retry:
+      max-attempts: 5
+      initial-interval: 1s
+      max-interval:
+      backoff-coefficient: 2.0
+  callback:
+    enabled: false
+    url: ""
+    timeout: 5s
+  visibility:
+    search-attributes-enabled: false
+
+argo:
+  compat:
+    leaf-activity-name: argo.template.execute
+    default-entrypoint: main
+
+registry:
+  storage-path: /tmp/temporal-service/registry
+
+k8s:
+  namespace: bluecopa
+  force-namespace: true     # always run Jobs in `namespace`, ignoring any manifest namespace
+  in-cluster: false         # set true when deployed inside Kubernetes
+  job-ttl-seconds: 1600
+  job-timeout-minutes: 60
+  job-poll-interval-seconds: 5
+  keep-failed-jobs: true
+  job-heartbeat-interval-seconds: 10
+  minimal-resources: true   # local testing: shrink scheduling requests to fit a single small node
+  minimal-memory-request: 256Mi
+  minimal-cpu-request: 100m
+
+security:
+  enabled: true
+  header-name: X-Api-Key
+  api-key: ${TEMPORAL_SERVICE_API_KEY:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

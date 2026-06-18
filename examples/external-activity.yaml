@@ -1,0 +1,21 @@
+# Polyglot example: the `fetchProfile` step targets an external activity worker.
+#
+# `FetchProfile` is an ordinary Temporal activity registered by a SEPARATE worker
+# (any language) polling the `profile-worker` task queue in the same Temporal
+# namespace. No `DslActivityHandler` is needed in this service for it.
+#
+# Drop the `taskQueue:` line and the same `call` would instead be routed
+# in-process by RoutingDynamicActivity on dsl-task-queue.
+id: external-activity
+version: "1.0"
+tasks:
+  - name: fetchProfile
+    call: FetchProfile
+    taskQueue: profile-worker
+    with:
+      userId: "${ .userId }"
+    result: profile
+    timeout:
+      startToClose: 30s
+    retry:
+      maxAttempts: 3
